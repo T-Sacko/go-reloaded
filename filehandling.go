@@ -16,77 +16,40 @@ func GoReloaded() {
 	data, err := os.ReadFile(os.Args[1])
 	check(err)
 	// data := "harold wilson (cap, 2) : ' I’m a optimist ,but a optimist who carries a raincoat . '"
-	input := string(data)
-	result := split_white_spaces(input)
+	result := strings.Fields(string(data))
 
 	// runs range loop to modify result
 	for i, v := range result {
 		// replaces the word before with its decimal version
-		if compare(v, "(hex)") == 0 {
+		if v == "(hex)" {
 			j, _ := strconv.ParseInt(result[i-1], 16, 64)
 			result[i-1] = fmt.Sprint(j)
+
 		}
 		// replaces the word before with its decimal version
 		if compare(v, "(bin)") == 0 {
 			j, _ := strconv.ParseInt(result[i-1], 2, 64)
-			result[i-1] = fmt.Sprint(j)
+			result[i-1] = string(rune(j))
+
 		}
 		// converts the word before to lowercase
-		if compare(v, "(low)") == 0 {
-			result[i-1] = to_lower(result[i-1])
+		if v == "(low)" {
+			result[i-1] = strings.ToLower(result[i-1])
 		}
 		// converts the number of words before to lowercase
-		if compare(v, "(low,") == 0 {
-			result[i-1] = to_lower(result[i-1])
-			fmt.Println(result)
+		if v == "(low," {
+			result[i-1] = strings.ToLower(result[i-1])
 
 			le := len(result[i+1])
 			numb := result[i+1][:le-1]
 			nu, err := strconv.Atoi(numb)
 			check(err)
-			fmt.Println(le)
-			fmt.Println(numb)
-			fmt.Println(nu)
 
 			for j := 1; j <= nu; j++ {
-				result[i-j] = to_lower(result[i-j])
+				result[i-j] = strings.ToLower(result[i-j])
 			}
 		}
 		// converts the word before to uppercase
-		if compare(v, "(up)") == 0 {
-			result[i-1] = to_upper(result[i-1])
-		}
-		// converts the number of words before to uppercase
-		if compare(v, "(up,") == 0 {
-			result[i-1] = to_upper(result[i-1])
-
-			le := len(result[i+1])
-			numb := result[i+1][:le-1]
-			nu, err := strconv.Atoi(numb)
-			check(err)
-
-			for j := 1; j <= nu; j++ {
-				result[i-j] = to_upper(result[i-j])
-			}
-		}
-		// capitalises the word before
-		if compare(v, "(cap)") == 0 {
-			result[i-1] = capitalise(result[i-1])
-		}
-		// capitalises the number of words before  //maybe remove 70 to 73
-		if compare(v, "(cap,") == 0 {
-			result[i-1] = capitalise(result[i-1])
-
-			le := len(result[i+1])        // le=2
-			numb := result[i+1][:le-1]    // remove parenthesis
-			nu, err := strconv.Atoi(numb) // changed ascii to integer
-			check(err)
-
-			for j := 1; j <= nu; j++ {
-				result[i-j] = capitalise(result[i-j])
-			}
-		}
-		// converts 'a' into 'an' when the next word begins with a vowel or 'h'.//maybe shorten with loop
 		if compare(v, "a") == 0 && first_rune(result[i+1]) == "a" {
 			result[i] = "an"
 		}
@@ -171,65 +134,10 @@ func compare(a, b string) int {
 	return 0
 }
 
-// converts word to uppercase
-func to_upper(s string) string {
-	sentence := []rune(s)
-	for i := 0; i < len(sentence); i++ {
-
-		currentLetter := sentence[i]
-
-		if currentLetter >= 'a' && currentLetter <= 'z' {
-			sentence[i] = sentence[i] - 32
-		}
-	}
-	return string(sentence)
-}
-
-// converts word to lowercase
-func to_lower(s string) string {
-	sentence := []rune(s)
-	for i := 0; i < len(sentence); i++ {
-
-		currentLetter := sentence[i]
-
-		if currentLetter >= 'A' && currentLetter <= 'Z' {
-			sentence[i] = sentence[i] + 32
-		}
-	}
-	return string(sentence)
-}
-
 // gets the first rune of a string
 func first_rune(s string) string {
 	a := []rune(s)
 	return string(a[0])
-}
-
-// capitalises the first character of a word
-func capitalise(s string) string {
-	runes := []rune(s)
-
-	strlen := 0
-	for i := range runes {
-		strlen = i + 1
-	}
-
-	for i := 0; i < strlen; i++ {
-		if i != 0 && (!((runes[i-1] >= 'a' && runes[i-1] <= 'z') || (runes[i-1] >= 'A' && runes[i-1] <= 'Z'))) {
-			if runes[i] >= 'a' && runes[i] <= 'z' {
-				runes[i] = rune(runes[i] - 32)
-			}
-		} else if i == 0 {
-			if runes[i] >= 'a' && runes[i] <= 'z' {
-				runes[i] = rune(runes[i] - 32)
-			}
-		} else {
-			if runes[i] >= 'A' && runes[i] <= 'Z' {
-				runes[i] = rune(runes[i] + 32)
-			}
-		}
-	}
-	return string(runes)
 }
 
 // seperate string by spaces and appends to string list
