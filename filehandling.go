@@ -27,7 +27,7 @@ func GoReloaded() {
 
 		}
 		// replaces the word before with its decimal version
-		if compare(v, "(bin)") == 0 {
+		if v == "(bin)" {
 			j, _ := strconv.ParseInt(result[i-1], 2, 64)
 			result[i-1] = string(rune(j))
 
@@ -42,6 +42,7 @@ func GoReloaded() {
 
 			le := len(result[i+1])
 			numb := result[i+1][:le-1]
+
 			nu, err := strconv.Atoi(numb)
 			check(err)
 
@@ -49,30 +50,16 @@ func GoReloaded() {
 				result[i-j] = strings.ToLower(result[i-j])
 			}
 		}
-		// converts the word before to uppercase
-		if compare(v, "a") == 0 && first_rune(result[i+1]) == "a" {
+		// converts a to an
+		if v == "a" && first_rune(result[i+1]) == "a" || v == "a" && first_rune(result[i+1]) == "e" || v == "a" && first_rune(result[i+1]) == "i" || v == "a" && first_rune(result[i+1]) == "o" || v == "a" && first_rune(result[i+1]) == "u" || v == "a" && first_rune(result[i+1]) == "h" {
 			result[i] = "an"
 		}
-		if compare(v, "a") == 0 && first_rune(result[i+1]) == "e" {
-			result[i] = "an"
-		}
-		if compare(v, "a") == 0 && first_rune(result[i+1]) == "i" {
-			result[i] = "an"
-		}
-		if compare(v, "a") == 0 && first_rune(result[i+1]) == "o" {
-			result[i] = "an"
-		}
-		if compare(v, "a") == 0 && first_rune(result[i+1]) == "u" {
-			result[i] = "an"
-		}
-		if compare(v, "a") == 0 && first_rune(result[i+1]) == "h" {
-			result[i] = "an"
-		}
+
 	}
 
 	// calls remove_tags() and split_white_spaces() and gets a new result variable
 	notagResult := remove_tags(result)
-	result2 := split_white_spaces(notagResult)
+	result2 := strings.Fields(notagResult)
 
 	str := ""
 	for _, word := range result2 {
@@ -124,45 +111,10 @@ func check(err error) {
 	}
 }
 
-func compare(a, b string) int {
-	if a == b {
-	} else if a < b {
-		return -1
-	} else if a > b {
-		return 1
-	}
-	return 0
-}
-
 // gets the first rune of a string
 func first_rune(s string) string {
 	a := []rune(s)
 	return string(a[0])
-}
-
-// seperate string by spaces and appends to string list
-func split_white_spaces(s string) []string {
-	return strings.Split(s, " ")
-
-	// var str []string
-	// var word string
-	// l := len(s) - 1
-
-	// for i, v := range s {
-	// 	if i == l {
-	// 		word = word + string(v)
-	// 		str = append(str, word)
-	// 	} else if v == 32 || v == 15 || v == 10 {
-	// 		if s[i+1] == ' ' || s[i+1] == '	' || s[i+1] == 10 {
-	// 		} else {
-	// 			str = append(str, word)
-	// 			word = ""
-	// 		}
-	// 	} else {
-	// 		word = word + string(v)
-	// 	}
-	// }
-	// return str
 }
 
 func quotes(s string) string {
@@ -203,7 +155,7 @@ func remove_tags(s []string) string {
 			if i == 0 {
 				str = str + tag
 			} else {
-				str = str + " " + tag
+				str = str + tag + " "
 			}
 		}
 	}
