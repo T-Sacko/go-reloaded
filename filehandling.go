@@ -50,6 +50,22 @@ func GoReloaded() {
 				result[i-j] = strings.ToLower(result[i-j])
 			}
 		}
+		if v == "(cap)" {
+			result[i-1] = capitalise(result[i-1])
+		}
+		// capitalises the number of words before  //maybe remove 70 to 73
+		if v == "(cap," {
+			result[i-1] = capitalise(result[i-1])
+
+			le := len(result[i+1])        // le=2
+			numb := result[i+1][:le-1]    // remove parenthesis
+			nu, err := strconv.Atoi(numb) // changed ascii to integer
+			check(err)
+
+			for j := 1; j <= nu; j++ {
+				result[i-j] = capitalise(result[i-j])
+			}
+		}
 		// converts a to an
 		if v == "a" && first_rune(result[i+1]) == "a" || v == "a" && first_rune(result[i+1]) == "e" || v == "a" && first_rune(result[i+1]) == "i" || v == "a" && first_rune(result[i+1]) == "o" || v == "a" && first_rune(result[i+1]) == "u" || v == "a" && first_rune(result[i+1]) == "h" {
 			result[i] = "an"
@@ -155,7 +171,7 @@ func remove_tags(s []string) string {
 			if i == 0 {
 				str = str + tag
 			} else {
-				str = str + tag + " "
+				str = str + " " + tag
 			}
 		}
 	}
@@ -168,4 +184,30 @@ func remove_spaces(s string) string {
 		return remove_spaces(s[:len])
 	}
 	return s[:len]
+}
+
+func capitalise(s string) string {
+	runes := []rune(s)
+
+	strlen := 0
+	for i := range runes {
+		strlen = i + 1
+	}
+
+	for i := 0; i < strlen; i++ {
+		if i != 0 && (!((runes[i-1] >= 'a' && runes[i-1] <= 'z') || (runes[i-1] >= 'A' && runes[i-1] <= 'Z'))) {
+			if runes[i] >= 'a' && runes[i] <= 'z' {
+				runes[i] = rune(runes[i] - 32)
+			}
+		} else if i == 0 {
+			if runes[i] >= 'a' && runes[i] <= 'z' {
+				runes[i] = rune(runes[i] - 32)
+			}
+		} else {
+			if runes[i] >= 'A' && runes[i] <= 'Z' {
+				runes[i] = rune(runes[i] + 32)
+			}
+		}
+	}
+	return string(runes)
 }
