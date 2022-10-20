@@ -46,8 +46,7 @@ func GoReloaded() {
 			le := len(result[i+1])
 			numb := result[i+1][:le-1]
 
-			nu, err := strconv.Atoi(numb)
-			check(err)
+			nu, _ := strconv.Atoi(numb)
 
 			for j := 1; j <= nu; j++ {
 				result[i-j] = strings.ToLower(result[i-j])
@@ -62,10 +61,9 @@ func GoReloaded() {
 		if v == "(cap," {
 			result[i-1] = capitalise(result[i-1])
 
-			le := len(result[i+1])        // le=2
-			numb := result[i+1][:le-1]    // remove parenthesis
-			nu, err := strconv.Atoi(numb) // changed ascii to integer
-			check(err)
+			le := len(result[i+1])      // le=2
+			numb := result[i+1][:le-1]  // remove parenthesis
+			nu, _ := strconv.Atoi(numb) // changed ascii to integer
 
 			for j := 1; j <= nu; j++ {
 				result[i-j] = capitalise(result[i-j])
