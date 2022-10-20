@@ -24,17 +24,20 @@ func GoReloaded() {
 		if v == "(hex)" {
 			j, _ := strconv.ParseInt(result[i-1], 16, 64)
 			result[i-1] = fmt.Sprint(j)
+			result[i] = "\b"
 
 		}
 		// replaces the word before with its decimal version
 		if v == "(bin)" {
 			j, _ := strconv.ParseInt(result[i-1], 2, 64)
 			result[i-1] = string(rune(j))
+			result[i] = "\b"
 
 		}
 		// converts the word before to lowercase
 		if v == "(low)" {
 			result[i-1] = strings.ToLower(result[i-1])
+			result[i] = "\b"
 		}
 		// converts the number of words before to lowercase
 		if v == "(low," {
@@ -49,9 +52,11 @@ func GoReloaded() {
 			for j := 1; j <= nu; j++ {
 				result[i-j] = strings.ToLower(result[i-j])
 			}
+			result[i], result[i+1] = "\b", "\b"
 		}
 		if v == "(cap)" {
 			result[i-1] = capitalise(result[i-1])
+			result[i] = "\b"
 		}
 		// capitalises the number of words before  //maybe remove 70 to 73
 		if v == "(cap," {
@@ -65,6 +70,7 @@ func GoReloaded() {
 			for j := 1; j <= nu; j++ {
 				result[i-j] = capitalise(result[i-j])
 			}
+			result[i], result[i+1] = "\b", "\b"
 		}
 		// converts a to an
 		if v == "a" && first_rune(result[i+1]) == "a" || v == "a" && first_rune(result[i+1]) == "e" || v == "a" && first_rune(result[i+1]) == "i" || v == "a" && first_rune(result[i+1]) == "o" || v == "a" && first_rune(result[i+1]) == "u" || v == "a" && first_rune(result[i+1]) == "h" {
@@ -74,15 +80,12 @@ func GoReloaded() {
 	}
 
 	// calls remove_tags() and split_white_spaces() and gets a new result variable
-	notagResult := remove_tags(result)
-	result2 := strings.Fields(notagResult)
 
 	str := ""
-	for _, word := range result2 {
+	for _, word := range result {
 		str = str + word + " "
 	}
 	// remove spaces from string
-	str = remove_spaces(str)
 
 	word := ""
 	for i, char := range str {
@@ -158,32 +161,6 @@ func quotes(s string) string {
 		}
 	}
 	return str
-}
-
-func remove_tags(s []string) string {
-	str := ""
-
-	for i, tag := range s {
-		if tag == "(cap," || tag == "(low," || tag == "(up," {
-			s[i] = ""
-			s[i+1] = ""
-		} else if tag != "(up)" && tag != "(hex)" && tag != "(bin)" && tag != "(cap)" && tag != "(low)" && tag != "" {
-			if i == 0 {
-				str = str + tag
-			} else {
-				str = str + " " + tag
-			}
-		}
-	}
-	return str
-}
-
-func remove_spaces(s string) string {
-	len := len(s) - 1
-	if s[len-1] == ' ' {
-		return remove_spaces(s[:len])
-	}
-	return s[:len]
 }
 
 func capitalise(s string) string {
