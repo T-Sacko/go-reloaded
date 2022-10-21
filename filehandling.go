@@ -34,6 +34,30 @@ func GoReloaded() {
 			result[i] = "\b"
 
 		}
+
+		//converts previous word upper
+		if v == "(up)" {
+			result[i-1] = strings.ToUpper(result[i-1])
+			result[i] = "\b"
+		}
+		//num of previous words upper
+		if v == "(up," {
+			result[i-1] = strings.ToUpper(result[i-1])
+
+			le := len(result[i+1])
+			numb := result[i+1][:le-1]
+
+			nu, err := strconv.Atoi(numb)
+			if err != nil {
+				panic(err)
+			}
+
+			for j := 1; j <= nu; j++ {
+				result[i-j] = strings.ToUpper(result[i-j])
+			}
+			result[i], result[i+1] = "\b", "\b"
+		}
+
 		// converts the word before to lowercase
 		if v == "(low)" {
 			result[i-1] = strings.ToLower(result[i-1])
@@ -46,7 +70,10 @@ func GoReloaded() {
 			le := len(result[i+1])
 			numb := result[i+1][:le-1]
 
-			nu, _ := strconv.Atoi(numb)
+			nu, err := strconv.Atoi(numb)
+			if err != nil {
+				panic(err)
+			}
 
 			for j := 1; j <= nu; j++ {
 				result[i-j] = strings.ToLower(result[i-j])
@@ -57,13 +84,16 @@ func GoReloaded() {
 			result[i-1] = capitalise(result[i-1])
 			result[i] = "\b"
 		}
-		// capitalises the number of words before  //maybe remove 70 to 73
+		// capitalises the number of words before
 		if v == "(cap," {
 			result[i-1] = capitalise(result[i-1])
 
-			le := len(result[i+1])      // le=2
-			numb := result[i+1][:le-1]  // remove parenthesis
-			nu, _ := strconv.Atoi(numb) // changed ascii to integer
+			le := len(result[i+1])
+			numb := result[i+1][:le-1]
+			nu, err := strconv.Atoi(numb) // changed to integer
+			if err != nil {
+				panic(err)
+			}
 
 			for j := 1; j <= nu; j++ {
 				result[i-j] = capitalise(result[i-j])
