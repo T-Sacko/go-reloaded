@@ -9,12 +9,15 @@ import (
 
 func main() {
 	GoReloaded()
+
 }
 
 // reads file and saves content to 'data' var
 func GoReloaded() {
 	data, err := os.ReadFile(os.Args[1])
-	check(err)
+	if err != nil {
+		panic(err)
+	}
 	// data := "harold wilson (cap, 2) : ' I’m a optimist ,but a optimist who carries a raincoat . '"
 	result := strings.Fields(string(data))
 
@@ -30,7 +33,7 @@ func GoReloaded() {
 		// replaces the word before with its decimal version
 		if v == "(bin)" {
 			j, _ := strconv.ParseInt(result[i-1], 2, 64)
-			result[i-1] = string(rune(j))
+			result[i-1] = fmt.Sprint(j)
 			result[i] = "\b"
 
 		}
@@ -104,64 +107,82 @@ func GoReloaded() {
 		if v == "a" && first_rune(result[i+1]) == "a" || v == "a" && first_rune(result[i+1]) == "e" || v == "a" && first_rune(result[i+1]) == "i" || v == "a" && first_rune(result[i+1]) == "o" || v == "a" && first_rune(result[i+1]) == "u" || v == "a" && first_rune(result[i+1]) == "h" {
 			result[i] = "an"
 		}
+		str := ""
+		for _, v := range result {
+			str += v + " "
+		}
 
-	}
+		word := ""
 
-	// calls remove_tags() and split_white_spaces() and gets a new result variable
-
-	str := ""
-	for _, word := range result {
-		str = str + word + " "
-	}
-	// remove spaces from string
-
-	word := ""
-	for i, char := range str {
-		if i == len(str)-1 {
-			if char == '.' || char == ',' || char == '!' || char == '?' || char == ';' || char == ':' {
+		for i, char := range str {
+			if i == len(str)-1 {
+				if char == '.' || char == ',' || char == '!' || char == '?' || char == ';' || char == ':' {
+					if str[i-1] == ' ' {
+						word = word[:len(word)-1] // end of paragraph avoidance of space after the full stop
+						word = word + string(char)
+					} else {
+						word = word + string(char)
+					}
+				} else {
+					word = word + string(char)
+				}
+			} else if char == '.' || char == ',' || char == '!' || char == '?' || char == ';' || char == ':' {
 				if str[i-1] == ' ' {
-					word = word[:len(word)-1] // end of paragraph avoidance of space after the full stop
+					word = word[:len(word)-1] // removes blank space prior to character
 					word = word + string(char)
 				} else {
 					word = word + string(char)
 				}
+				if str[i+1] != ' ' && str[i+1] != '.' && str[i+1] != ',' && str[i+1] != '!' && str[i+1] != '?' && str[i+1] != ';' && str[i+1] != ':' {
+					word = word + " " // adds a space after character
+				}
 			} else {
 				word = word + string(char)
 			}
-		} else if char == '.' || char == ',' || char == '!' || char == '?' || char == ';' || char == ':' {
-			if str[i-1] == ' ' {
-				word = word[:len(word)-1] // removes blank space prior to character
-				word = word + string(char)
-			} else {
-				word = word + string(char)
-			}
-			if str[i+1] != ' ' && str[i+1] != '.' && str[i+1] != ',' && str[i+1] != '!' && str[i+1] != '?' && str[i+1] != ';' && str[i+1] != ':' {
-				word = word + " " // adds a space after character
-			}
-		} else {
-			word = word + string(char)
+		}
+
+		output := []byte(quotes(word))
+		OurData := os.Args[2]
+		words := os.WriteFile(OurData, output, 0644)
+		if words != nil {
+			panic(words)
 		}
 	}
-	// calls quotes() to remove additional spaces
-	word = quotes(word)
-	output := []byte(word)
-	OurData := os.Args[2]
-	words := os.WriteFile(OurData, output, 0644)
-	check(words)
 	// fmt.Println(word)
 }
 
 // quits if there's an error
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
 
 // gets the first rune of a string
 func first_rune(s string) string {
 	a := []rune(s)
 	return string(a[0])
+}
+
+func capitalise(s string) string {
+	runes := []rune(s)
+
+	strlen := 0
+	for i := range runes {
+		strlen = i + 1
+	}
+
+	for i := 0; i < strlen; i++ {
+		if i != 0 && (!((runes[i-1] >= 'a' && runes[i-1] <= 'z') || (runes[i-1] >= 'A' && runes[i-1] <= 'Z'))) {
+			if runes[i] >= 'a' && runes[i] <= 'z' {
+				runes[i] = rune(runes[i] - 32)
+			}
+		} else if i == 0 {
+			if runes[i] >= 'a' && runes[i] <= 'z' {
+				runes[i] = rune(runes[i] - 32)
+			}
+		} else {
+			if runes[i] >= 'A' && runes[i] <= 'Z' {
+				runes[i] = rune(runes[i] + 32)
+			}
+		}
+	}
+	return string(runes)
 }
 
 func quotes(s string) string {
@@ -189,30 +210,4 @@ func quotes(s string) string {
 		}
 	}
 	return str
-}
-
-func capitalise(s string) string {
-	runes := []rune(s)
-
-	strlen := 0
-	for i := range runes {
-		strlen = i + 1
-	}
-
-	for i := 0; i < strlen; i++ {
-		if i != 0 && (!((runes[i-1] >= 'a' && runes[i-1] <= 'z') || (runes[i-1] >= 'A' && runes[i-1] <= 'Z'))) {
-			if runes[i] >= 'a' && runes[i] <= 'z' {
-				runes[i] = rune(runes[i] - 32)
-			}
-		} else if i == 0 {
-			if runes[i] >= 'a' && runes[i] <= 'z' {
-				runes[i] = rune(runes[i] - 32)
-			}
-		} else {
-			if runes[i] >= 'A' && runes[i] <= 'Z' {
-				runes[i] = rune(runes[i] + 32)
-			}
-		}
-	}
-	return string(runes)
 }
