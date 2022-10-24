@@ -9,7 +9,6 @@ import (
 
 func main() {
 	GoReloaded()
-
 }
 
 // reads file and saves content to 'data' var
@@ -27,23 +26,23 @@ func GoReloaded() {
 		if v == "(hex)" {
 			j, _ := strconv.ParseInt(result[i-1], 16, 64)
 			result[i-1] = fmt.Sprint(j)
-			result[i] = "\b"
+			result[i] = ""
 
 		}
 		// replaces the word before with its decimal version
 		if v == "(bin)" {
 			j, _ := strconv.ParseInt(result[i-1], 2, 64)
 			result[i-1] = fmt.Sprint(j)
-			result[i] = "\b"
+			result[i] = ""
 
 		}
 
-		//converts previous word upper
+		// converts previous word upper
 		if v == "(up)" {
 			result[i-1] = strings.ToUpper(result[i-1])
-			result[i] = "\b"
+			result[i] = ""
 		}
-		//num of previous words upper
+		// num of previous words upper
 		if v == "(up," {
 			result[i-1] = strings.ToUpper(result[i-1])
 
@@ -58,13 +57,13 @@ func GoReloaded() {
 			for j := 1; j <= nu; j++ {
 				result[i-j] = strings.ToUpper(result[i-j])
 			}
-			result[i], result[i+1] = "\b", "\b"
+			result[i], result[i+1] = "", ""
 		}
 
 		// converts the word before to lowercase
 		if v == "(low)" {
 			result[i-1] = strings.ToLower(result[i-1])
-			result[i] = "\b"
+			result[i] = ""
 		}
 		// converts the number of words before to lowercase
 		if v == "(low," {
@@ -81,11 +80,11 @@ func GoReloaded() {
 			for j := 1; j <= nu; j++ {
 				result[i-j] = strings.ToLower(result[i-j])
 			}
-			result[i], result[i+1] = "\b", "\b"
+			result[i], result[i+1] = "", ""
 		}
 		if v == "(cap)" {
 			result[i-1] = capitalise(result[i-1])
-			result[i] = "\b"
+			result[i] = ""
 		}
 		// capitalises the number of words before
 		if v == "(cap," {
@@ -101,14 +100,20 @@ func GoReloaded() {
 			for j := 1; j <= nu; j++ {
 				result[i-j] = capitalise(result[i-j])
 			}
-			result[i], result[i+1] = "\b", "\b"
+			result[i], result[i+1] = "", ""
 		}
+		strr := ""
+		for _, v := range result {
+			strr = strr + v + " "
+		}
+		result1 := strings.Fields(strr)
+
 		// converts a to an
 		if v == "a" && first_rune(result[i+1]) == "a" || v == "a" && first_rune(result[i+1]) == "e" || v == "a" && first_rune(result[i+1]) == "i" || v == "a" && first_rune(result[i+1]) == "o" || v == "a" && first_rune(result[i+1]) == "u" || v == "a" && first_rune(result[i+1]) == "h" {
 			result[i] = "an"
 		}
 		str := ""
-		for _, v := range result {
+		for _, v := range result1 {
 			str += v + " "
 		}
 
